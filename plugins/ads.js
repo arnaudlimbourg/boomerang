@@ -20,8 +20,8 @@ var impl = {
   timeout: 1000,
 
   do_test: function() {
-    BOOMR.debug('ads: called do_test');
-    BOOMR.debug(this.ads_src);
+    BOOMR.debug('called do_test', 'ads');
+    BOOMR.debug(this.ads_src, 'ads');
     if (!this.ads_src) {
       return this;
     }
@@ -29,7 +29,7 @@ var impl = {
   },
 
   load_img: function(src) {
-    BOOMR.debug('ads: called load_img');
+    BOOMR.debug('called load_img', 'ads');
     var img = new Image(),
         timer,
         that = this;
@@ -38,7 +38,7 @@ var impl = {
       img.onload = img.onerror = null;
       img = null;
       clearTimeout(timer);
-      BOOMR.debug('ads are loaded it seems');
+      BOOMR.debug('ads are loaded it seems', 'ads');
       that.ad_is_loaded = true;
       that.running = false;
       that.finish();
@@ -52,7 +52,7 @@ var impl = {
       if (this.aborted) {
         return false;
       }
-      BOOMR.debug('adblocking in action');
+      BOOMR.debug('adblocking in action', 'ads');
       that.ad_is_loaded = false;
       that.running = false;
       that.finish();
@@ -67,6 +67,7 @@ var impl = {
   },
 
   finish: function() {
+    BOOMR.debug('finish called', 'ads');
     if (!this.aborted) {
       BOOMR.addVar("ads", this.ad_is_loaded ? 1 : 0);
     }
@@ -103,7 +104,7 @@ BOOMR.plugins.ads = {
   },
 
   abort: function() {
-    BOOMR.debug('abort called');
+    BOOMR.debug('abort called', 'ads');
     impl.aborted = true;
     if (impl.running) {
       impl.finish();
