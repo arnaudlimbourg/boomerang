@@ -14,7 +14,7 @@ BOOMR.plugins = BOOMR.plugins || {};
 var impl = {
   ads_src: false,
   complete: false,
-  ad_is_loaded: false,
+  ad_is_loaded: undefined,
   running: false,
   aborted: false,
   timeout: 1000,
@@ -35,6 +35,7 @@ var impl = {
         that = this;
 
     img.onload = function() {
+      BOOMR.debug('onload called', 'ads');
       img.onload = img.onerror = null;
       img = null;
       clearTimeout(timer);
@@ -46,12 +47,10 @@ var impl = {
     };
 
     img.onerror= function() {
+      BOOMR.debug('onerror called', 'ads');
       img.onload = img.onerror = null;
       img = null;
       clearTimeout(timer);
-      if (this.aborted) {
-        return false;
-      }
       BOOMR.debug('adblocking in action', 'ads');
       that.ad_is_loaded = false;
       that.running = false;
@@ -60,7 +59,9 @@ var impl = {
     };
 
     timer = setTimeout(function() {
-      return false;
+      BOOMR.debug('image timer called', 'ads');
+      that.aborted = true;
+      that.finish();
     }, this.timeout);
 
     img.src = this.ads_src;
