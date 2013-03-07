@@ -97,19 +97,8 @@ BOOMR.plugins.ads = {
     impl.running = true;
     impl.aborted = false;
 
-    setTimeout(this.abort, impl.timeout);
-
     impl.do_test();
 
-    return this;
-  },
-
-  abort: function() {
-    BOOMR.debug('abort called', 'ads');
-    impl.aborted = true;
-    if (impl.running) {
-      impl.finish();
-    }
     return this;
   },
 
