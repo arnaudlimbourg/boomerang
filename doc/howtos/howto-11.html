@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Boomerang Howto #11: Using the ads plugin</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="../boomerang-docs.css">
+</head>
+<body>
+<span style="float:right;"><a href="../">all docs</a> | <a href="index.html">index</a></span>
+<h1>boomerang howto #11:<br>Using the ads plugin</h1>
+<p>
+The ads plugin was devised as a simple way to check wether an ad blocking
+mechanism is in use and beacon the data back to the server
+</p>
+
+<p>
+To achieve this you have to provide a url to an image that you konw is an ad
+and you know it will be there for a long time. It tries to create the image
+with the url you provide. If if succeeds the parameter <em>ads</em> is beaconed
+back with the value of <em>1</em>, otherwise it is <em>0</em>
+</p>
+
+<pre>
+BOOMR.init({
+  beacon_url: "http://localhost:8000",
+  ads: {
+    ads_src: "http://i.cdn.turner.com/cnn/.element/img/3.0/global/misc/advertisement.gif"
+  }
+});
+</pre>
+
+<p>There is only one parameter necessary for configuration</p>
+<dl>
+<dt>ads_src</dt>
+<dd>
+<strong>[mandatory]</strong>
+The url to the source image to use for the test
+</dd>
+</dl>
+
+<p>One variable is added to the beacon
+<dl>
+<dt>ads</dt>
+<dd>
+It has a value of 1 is the test suceeded, meaning ads are working
+or a value of 0 is ads are disabled, by an adblocker for example.
+</dd>
+</dl>
+
+</body>
+</html>
