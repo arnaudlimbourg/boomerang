@@ -16,15 +16,23 @@ init() method.
 usage
 ---
 
-The simple synchronous way to include boomerang on your page:
+## The simple synchronous way
+
 ```html
-<script src="http://your-cdn.host.com/path/to/boomerang-version.js"></script>
+<script src="boomerang/boomerang.js"></script>
+<script src="boomerang/plugins/rt.js"></script>
 <script>
-   BOOMR.init();
+   BOOMR.init({
+       beacon_url: "/boomerang_handler"
+   });
 </script>
 ```
 
-The faster, more involved, asynchronous way (and what I do for sites I control):
+**Note** - you must include at least one plugin (it doesn't have to be rt) or else the beacon will never actually be called.
+
+## The faster, more involved, asynchronous way
+
+This is what I like to do for sites I control.
 
 ### 1. Add a plugin to init your code
 
@@ -110,6 +118,35 @@ For boomerang, this is the code you'll include:
 The `id` of the script node created by this code MUST be `boomr-if-as` as boomerang looks for that id to determine if it's running within an iframe or not.
 
 Boomerang will still export the `BOOMR` object to the parent window if running inside an iframe, so the rest of your code should remain unchanged.
+
+#### 3.3. Identifying when boomerang has loaded
+
+If you load boomerang asynchronously, there's some uncertainty in when boomerang has completed loading.  To get around this, you can subscribe to the
+`onBoomerangLoaded` Custom Event on the `document` object:
+
+```javascript
+   // Modern browsers
+   if (document.addEventListener) {
+      document.addEventListener("onBoomerangLoaded", function(e) {
+         // e.detail.BOOMR is a reference to the BOOMR global object
+      });
+   }
+   // IE 6, 7, 8 we use onPropertyChange and look for propertyName === "onBoomerangLoaded"
+   else if (document.attachEvent) {
+      document.attachEvent("onpropertychange", function(e) {
+         if (!e) e=event;
+         if (e.propertyName === "onBoomerangLoaded") {
+            // e.detail.BOOMR is a reference to the BOOMR global object
+         }
+      });
+   }
+
+```
+
+Note that this only works on browsers that support the CustomEvent interface, which at this time is Chrome (including Android), Firefox 6+ (including Android),
+Opera (including Android, but not Opera Mini), Safari (including iOS), IE 6+ (but see the code above for the special way to listen for the event on IE6, 7 & 8).
+
+Boomerang also fires the `onBeforeBoomerangBeacon` and `onBoomerangBeacon` events just before and during beaconing.
 
 docs
 ---

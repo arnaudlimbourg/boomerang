@@ -9,6 +9,9 @@
 
 BOOMR = BOOMR || {};
 BOOMR.plugins = BOOMR.plugins || {};
+if(BOOMR.plugins.CACHE_RELOAD) {
+	return;
+}
 
 var impl = {
 	url: ""
@@ -18,12 +21,13 @@ BOOMR.plugins.CACHE_RELOAD = {
 	init: function(config) {
 		BOOMR.utils.pluginConfig(impl, config, "CACHE_RELOAD", ["url"]);
 
-		if(!impl.url)
+		if(!impl.url) {
 			return this;
+		}
 
 		// we use document and not BOOMR.window.document since
 		// we can run inside the boomerang iframe if any
-		var i=document.createElement('iframe');
+		var i=document.createElement("iframe");
 		i.style.display="none";
 		i.src=impl.url;
 		document.body.appendChild(i);

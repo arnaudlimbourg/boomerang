@@ -14,12 +14,19 @@ see: http://www.w3.org/TR/navigation-timing/
 // you'll need this.
 BOOMR = BOOMR || {};
 BOOMR.plugins = BOOMR.plugins || {};
+if (BOOMR.plugins.NavigationTiming) {
+	return;
+}
 
 // A private object to encapsulate all your implementation details
 var impl = {
 	complete: false,
 	done: function() {
 		var w = BOOMR.window, p, pn, pt, data;
+		if(this.complete) {
+			return this;
+		}
+
 		p = w.performance || w.msPerformance || w.webkitPerformance || w.mozPerformance;
 		if(p && p.timing && p.navigation) {
 			BOOMR.info("This user agent supports NavigationTiming.", "nt");
@@ -84,7 +91,9 @@ var impl = {
 
 BOOMR.plugins.NavigationTiming = {
 	init: function() {
+		// we'll fire on whichever happens first
 		BOOMR.subscribe("page_ready", impl.done, null, impl);
+		BOOMR.subscribe("page_unload", impl.done, null, impl);
 		return this;
 	},
 

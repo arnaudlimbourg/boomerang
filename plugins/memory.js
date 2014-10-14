@@ -14,16 +14,23 @@ see: http://code.google.com/p/chromium/issues/detail?id=43281
 // you'll need this.
 BOOMR = BOOMR || {};
 BOOMR.plugins = BOOMR.plugins || {};
+if (BOOMR.plugins.Memory) {
+	return;
+}
 
 // A private object to encapsulate all your implementation details
 var impl = {
 	complete: false,
 	done: function() {
+		if(this.complete) {
+			return this;
+		}
+
 		var w  = BOOMR.window,
 		    p  = w.performance,
 		    c  = w.console,
 		    d  = w.document,
-		    fn = (({}).toString.call(w.opera) === '[object Opera]' ? d.querySelectorAll : d.getElementsByTagName),
+		    fn = d.getElementsByTagName,
 		    m, f;
 
 		// handle IE6/7 weirdness regarding host objects
@@ -32,19 +39,24 @@ var impl = {
 
 		m = (p && p.memory ? p.memory : (c && c.memory ? c.memory : null));
 
+		// If we have resource timing, get number of resources
+		if(p && p.getEntries && p.getEntries().length) {
+			BOOMR.addVar("dom.res", p.getEntries().length);
+		}
+
 		if(m) {
 			BOOMR.addVar({
-				'mem.total': m.totalJSHeapSize,
-				'mem.used' : m.usedJSHeapSize
+				"mem.total": m.totalJSHeapSize,
+				"mem.used" : m.usedJSHeapSize
 			});
 		}
 
 
 		BOOMR.addVar({
-			'dom.ln': f.call(d, '*').length,
-			'dom.sz': f.call(d, 'html')[0].innerHTML.length,
-			'dom.img': f.call(d, 'img').length,
-			'dom.script': f.call(d, 'script').length
+			"dom.ln": f.call(d, "*").length,
+			"dom.sz": f.call(d, "html")[0].innerHTML.length,
+			"dom.img": f.call(d, "img").length,
+			"dom.script": f.call(d, "script").length
 		});
 
 		this.complete = true;
@@ -56,6 +68,7 @@ BOOMR.plugins.Memory = {
 	init: function() {
 		// we do this on onload so that we take a memory and dom snapshot after most things have run
 		BOOMR.subscribe("page_ready", impl.done, null, impl);
+		BOOMR.subscribe("page_unload", impl.done, null, impl);
 		return this;
 	},
 
